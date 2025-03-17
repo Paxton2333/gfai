@@ -1,0 +1,383 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G Foundation AI Tech Corp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --secondary: #ff6b6b;
+            --background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            background: var(--background);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        #promptInput {
+            flex: 1;
+            min-width: 300px;
+            padding: 1rem;
+            border: 2px solid #373737;
+            border-radius: 12px;
+            background: #2d2d2d;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #promptInput:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+            outline: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .generate-btn {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .image-card {
+            position: relative;
+            background: #2d2d2d;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .prompt-text {
+            padding: 1rem;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.5);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .loading-dots {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 20px;
+            text-align: center;
+        }
+
+        .loading-dots .dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: loading 2s infinite;
+        }
+
+        .loading-dots .dot:nth-child(1) {
+            left: 0;
+            animation-delay: 0s;
+        }
+
+        .loading-dots .dot:nth-child(2) {
+            left: 30px;
+            animation-delay: 0.5s;
+        }
+
+        .loading-dots .dot:nth-child(3) {
+            left: 60px;
+            animation-delay: 1s;
+        }
+
+        @keyframes loading {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Enhanced NSFW toggle */
+        .nsfw-toggle {
+            background: rgba(255,75,75,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px solid #ff4b4b;
+        }
+
+        /* Aspect ratio selector */
+        .aspect-selector {
+            background: #2d2d2d;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 2px solid #373737;
+            color: white;
+        }
+
+        /* Floating notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        /* Navigation styles */
+        .nav-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .nav-btn {
+            padding: 0.8rem 2rem;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: rgba(124, 58, 237, 0 0.2);
+        }
+
+        /* Writing section styles */
+        .writing-area {
+            width: 100%;
+            height: 300px;
+            padding: 1rem;
+            background: #2d2d2d;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        /* Chat section styles */
+        .chat-container {
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .chat-history {
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 1rem;
+            background: #2d2d2d;
+            border: 2px solid var(--primary);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ G Foundation AI Tech Corp ✨</h1>
+        <div class="controls">
+            <input type="text" id="promptInput" placeholder="Describe your vision... 🌌">
+            <div class="button-group">
+                <select class="aspect-selector" id="aspectRatio">
+                    <option value="16:9">Widescreen</option>
+                    <option value="1:1">Square</option>
+                    <option value="3:2">Classic</option>
+                </select>
+                <button class="generate-btn" id="generateBtn" onclick="generateImage()">
+                    <span class="btn-text">Create Art</span>
+                    <div class="loading-dots" style="display: none">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </button>
+                <label class="nsfw-toggle">
+                    <input type="checkbox" id="nsfwToggle">
+                    <span class="toggle-slider"></span>
+                    🔞 NSFW Mode
+                </label>
+            </div>
+        </div>
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <script>
+        let isGenerating = false;
+
+        async function generateImage() {
+            if (isGenerating) return;
+            
+            const prompt = document.getElementById('promptInput').value.trim();
+            const aspectRatio = document.getElementById('aspectRatio').value;
+            const btn = document.getElementById('generateBtn');
+            
+            if (!prompt) {
+                showNotification('🎨 Please enter a creative prompt!');
+                return;
+            }
+
+            try {
+                isGenerating = true;
+                toggleLoading(true);
+
+                const result = await websim.imageGen({
+                    prompt: prompt,
+                    aspect_ratio: aspectRatio,
+                    nsfw: document.getElementById('nsfwToggle').checked,
+                    safety_filter: false
+                });
+
+                addImageToGallery(result.url, prompt);
+                showNotification('🖼️ New masterpiece added!');
+                document.getElementById('promptInput').value = '';
+            } catch (error) {
+                showNotification(`❌ Error: ${error.message}`, true);
+            } finally {
+                isGenerating = false;
+                toggleLoading(false);
+            }
+        }
+
+        function addImageToGallery(url, prompt) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.innerHTML = `
+                <img src="${url}" alt="${prompt}">
+                <div class="prompt-text">${prompt}</div>
+            `;
+            document.getElementById('gallery').prepend(card);
+            card.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleLoading(show) {
+            const loadingDots = document.querySelector('.loading-dots');
+            if (show) {
+                loadingDots.style.display = 'inline-block';
+            } else {
+                loadingDots.style.display = 'none';
+            }
+        }
+
+        function showNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            if (isError) {
+                notification.style.background = 'var(--secondary)';
+            }
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Add keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') generateImage();
+        });
+    </script>
+</body>
+</html>
